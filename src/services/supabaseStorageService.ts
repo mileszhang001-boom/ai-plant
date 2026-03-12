@@ -116,6 +116,16 @@ export async function getPhotoUrl(scanId: string): Promise<string | null> {
   return urlData.publicUrl;
 }
 
+// ===== Feedback =====
+
+export async function insertFeedback(content: string, contact?: string): Promise<void> {
+  const { error } = await supabase
+    .from('feedback')
+    .insert({ content, contact: contact || null });
+
+  if (error) throw error;
+}
+
 // ===== DB ↔ App Type Converters =====
 
 interface DbPlant {

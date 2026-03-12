@@ -38,6 +38,15 @@ create table if not exists match_logs (
   created_at timestamptz not null default now()
 );
 
+-- 4. Feedback table
+create table if not exists feedback (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid default auth.uid() references auth.users(id) on delete set null,
+  content text not null,
+  contact text,
+  created_at timestamptz not null default now()
+);
+
 -- ===== RLS Policies =====
 
 alter table plants enable row level security;
@@ -57,6 +66,10 @@ create policy "Users can insert own scan_records" on scan_records for insert wit
 -- Match logs: users can only CRUD their own
 create policy "Users can view own match_logs" on match_logs for select using (auth.uid() = user_id);
 create policy "Users can insert own match_logs" on match_logs for insert with check (auth.uid() = user_id);
+
+-- Feedback: users can insert, only admin can read
+alter table feedback enable row level security;
+create policy "Users can insert feedback" on feedback for insert to authenticated with check (true);
 
 -- ===== Storage Bucket =====
 
