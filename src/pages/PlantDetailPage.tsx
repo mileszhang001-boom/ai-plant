@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { T, E, FONTS } from '../theme';
+import { T, E, FONTS, heroGradient } from '../theme';
 import { hpColor, hpFace, hpMood } from '../utils/hpUtils';
 import { useApp } from '../App';
 import PixelPlant from '../components/PixelPlant';
@@ -24,6 +24,7 @@ export default function PlantDetailPage() {
   ];
 
   const handleAction = () => {
+    if (actionDone) return;
     setActionDone(true);
     dispatch({ type: 'COMPLETE_ACTION', id: plant.id });
     setTimeout(() => setActionDone(false), 2000);
@@ -32,14 +33,14 @@ export default function PlantDetailPage() {
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       {/* Scrollable content */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px 16px' }}>
         {/* Top bar */}
         <div
           style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            marginBottom: 8,
+            padding: '12px 0 8px',
           }}
         >
           <div
@@ -55,12 +56,13 @@ export default function PlantDetailPage() {
               alignItems: 'center',
               gap: 4,
               cursor: 'pointer',
-              padding: '4px 10px',
+              padding: '5px 12px',
               borderRadius: 8,
               border: '1px solid ' + T.border,
               fontSize: 11,
               color: T.text2,
               fontWeight: 600,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
             }}
           >
             <span style={{ fontSize: 12 }}>{E.book}</span>
@@ -68,54 +70,90 @@ export default function PlantDetailPage() {
           </div>
         </div>
 
-        {/* Hero Card */}
+        {/* Hero Card — redesigned with gradient background */}
         <div
           style={{
-            background: T.card,
+            background: heroGradient(dHp),
             border: '1px solid ' + T.border,
-            borderRadius: 18,
-            padding: '16px 16px 14px',
-            marginBottom: 12,
+            borderRadius: 20,
+            padding: '20px 20px 18px',
+            marginBottom: 14,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+            position: 'relative',
+            overflow: 'hidden',
           }}
         >
-          <div style={{ textAlign: 'center', marginBottom: 4 }}>
+          {/* Subtle inner border glow */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            borderRadius: 20,
+            border: '1px solid rgba(255,255,255,0.6)',
+            pointerEvents: 'none',
+          }} />
+
+          {/* Plant name & species */}
+          <div style={{ textAlign: 'center', marginBottom: 6, position: 'relative' }}>
             <div
               style={{
-                fontSize: 17,
+                fontSize: 18,
                 fontWeight: 800,
                 color: T.text1,
                 fontFamily: FONTS.pixel,
+                letterSpacing: 1,
               }}
             >
               {plant.fun_name}
             </div>
-            <div style={{ fontSize: 10, color: T.text3, marginTop: 1 }}>
+            <div style={{ fontSize: 10, color: T.text2, marginTop: 3 }}>
               {plant.species + ' ' + E.tri + ' ' + plant.personality}
             </div>
           </div>
-          <div style={{ padding: '8px 0 4px' }}>
-            <PixelPlant hp={dHp} size={90} />
+
+          {/* Pixel plant — enlarged */}
+          <div style={{ padding: '12px 0 8px', position: 'relative' }}>
+            <PixelPlant hp={dHp} size={120} species={plant.species} />
           </div>
-          <div style={{ textAlign: 'center', marginBottom: 10 }}>
+
+          {/* ASCII expression — enlarged */}
+          <div style={{ textAlign: 'center', marginBottom: 12 }}>
             <div
               style={{
-                fontSize: 28,
+                fontSize: 36,
                 color: hpColor(dHp),
                 fontFamily: FONTS.pixel,
                 fontWeight: 700,
-                letterSpacing: 4,
+                letterSpacing: 5,
                 lineHeight: 1,
-                marginBottom: 3,
+                marginBottom: 5,
                 transition: 'color 0.4s',
               }}
             >
               {hpFace(dHp)}
             </div>
-            <div style={{ fontSize: 11, color: T.text2, letterSpacing: 0.5 }}>
+            <div
+              style={{
+                fontSize: 12,
+                color: T.text2,
+                letterSpacing: 0.5,
+                fontWeight: 500,
+              }}
+            >
               {hpMood(dHp)}
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+
+          {/* HP Bar */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              background: 'rgba(255,255,255,0.5)',
+              borderRadius: 10,
+              padding: '8px 12px',
+            }}
+          >
             <span
               style={{
                 color: T.accent,
@@ -132,11 +170,11 @@ export default function PlantDetailPage() {
             </div>
             <span
               style={{
-                fontSize: 14,
+                fontSize: 16,
                 fontWeight: 800,
                 color: hpColor(dHp),
                 fontFamily: FONTS.pixel,
-                minWidth: 40,
+                minWidth: 44,
                 textAlign: 'right',
                 transition: 'all 0.4s',
               }}
@@ -169,6 +207,7 @@ export default function PlantDetailPage() {
         {/* Action button */}
         <button
           onClick={handleAction}
+          disabled={actionDone}
           style={{
             width: '100%',
             padding: '14px 0',
@@ -178,7 +217,8 @@ export default function PlantDetailPage() {
             borderRadius: 12,
             fontSize: 15,
             fontWeight: 700,
-            cursor: 'pointer',
+            cursor: actionDone ? 'default' : 'pointer',
+            opacity: actionDone ? 0.7 : 1,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -186,7 +226,6 @@ export default function PlantDetailPage() {
             boxShadow: '0 2px 8px rgba(46,125,50,0.2)',
             fontFamily: 'inherit',
             transition: 'all 0.3s',
-            marginBottom: 16,
           }}
         >
           <span style={{ fontSize: 17 }}>

@@ -1,10 +1,12 @@
 import { T, E } from '../theme';
 import { useApp } from '../App';
+import { useAuth } from '../contexts/AuthContext';
 import PlantCard from '../components/PlantCard';
 import Scanlines from '../components/Scanlines';
 
 export default function PlantListPage() {
   const { state, dispatch, navigate } = useApp();
+  const { signOut } = useAuth();
   const plants = state.plants;
 
   return (
@@ -32,14 +34,19 @@ export default function PlantListPage() {
             {E.tri + ' PLANT.OS v1.0'}
           </div>
           <div
+            onClick={signOut}
             style={{
-              color: '#C62828',
+              color: T.text3,
               fontSize: 9,
               letterSpacing: 1,
               fontWeight: 600,
+              cursor: 'pointer',
+              padding: '2px 6px',
+              borderRadius: 4,
+              border: '1px solid ' + T.border,
             }}
           >
-            {E.circle + ' LIVE'}
+            退出登录
           </div>
         </div>
         <div

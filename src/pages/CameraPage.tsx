@@ -103,7 +103,7 @@ export default function CameraPage() {
           photoBase64: base64,
           aiResult: null,
           matchResults: [],
-          targetPlantId: null,
+          targetPlantId: existingTargetId,
         },
       });
       navigate('analyzing');

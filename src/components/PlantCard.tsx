@@ -26,6 +26,7 @@ export default function PlantCard({ plant, onClick }: PlantCardProps) {
         cursor: 'pointer',
         background: T.card,
         border: '1px solid ' + T.border,
+        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
         transition: 'transform 0.1s',
       }}
       onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.97)')}
@@ -36,7 +37,7 @@ export default function PlantCard({ plant, onClick }: PlantCardProps) {
     >
       {/* Mini pixel plant */}
       <div style={{ width: 44, height: 44, flexShrink: 0, position: 'relative' }}>
-        <PixelPlant hp={plant.current_hp} size={44} />
+        <PixelPlant hp={plant.current_hp} size={44} species={plant.species} />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div

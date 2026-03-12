@@ -53,6 +53,14 @@ export const HP_COLORS = {
   danger: '#C62828',
 } as const;
 
+// ===== Hero Card Gradients =====
+export function heroGradient(hp: number): string {
+  if (hp >= 75) return 'linear-gradient(145deg, #E8F5E9 0%, #F1F8E9 40%, #FAFDF6 100%)';
+  if (hp >= 50) return 'linear-gradient(145deg, #FFFDE7 0%, #FFF8E1 40%, #FFFEF5 100%)';
+  if (hp >= 25) return 'linear-gradient(145deg, #FFF3E0 0%, #FBE9E7 40%, #FFFAF7 100%)';
+  return 'linear-gradient(145deg, #FFEBEE 0%, #FCE4EC 40%, #FFF5F5 100%)';
+}
+
 // ===== Font Families =====
 export const FONTS = {
   pixel: "'Courier New', monospace",

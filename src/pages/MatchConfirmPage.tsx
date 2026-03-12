@@ -1,22 +1,25 @@
+import { useEffect } from 'react';
 import { T, E, FONTS } from '../theme';
 import { useApp } from '../App';
 import { validateMetrics } from '../utils/smoothing';
-import { saveMatchLog } from '../services/storageService';
+import { insertMatchLog, uploadPhoto } from '../services/supabaseStorageService';
+import { compressBase64Photo } from '../services/photoService';
 import PixelPlant from '../components/PixelPlant';
 
 export default function MatchConfirmPage() {
   const { state, dispatch, navigate } = useApp();
   const pending = state.pendingScan;
 
-  if (!pending?.aiResult) {
-    navigate('list');
-    return null;
-  }
+  useEffect(() => {
+    if (!pending?.aiResult) navigate('list');
+  }, [pending?.aiResult]);
+
+  if (!pending?.aiResult) return null;
 
   const aiResult = pending.aiResult;
   const matches = pending.matchResults;
 
-  const handleSelectPlant = (plantId: string) => {
+  const handleSelectPlant = async (plantId: string) => {
     const validatedMetrics = validateMetrics(aiResult.metrics);
 
     const scanRecord = {
@@ -28,8 +31,15 @@ export default function MatchConfirmPage() {
       ai_raw_response: aiResult,
     };
 
+    // Compress & upload photo to Supabase Storage
+    if (pending?.photoBase64) {
+      compressBase64Photo(pending.photoBase64).then(
+        (compressed) => uploadPhoto(scanRecord.id, compressed)
+      ).catch(() => {});
+    }
+
     // Save match log
-    saveMatchLog({
+    insertMatchLog({
       id: crypto.randomUUID(),
       scan_id: scanRecord.id,
       ai_suggestion: matches[0]?.plantId || null,
@@ -38,12 +48,26 @@ export default function MatchConfirmPage() {
       is_new_plant: false,
     });
 
-    dispatch({ type: 'UPDATE_PLANT_HP', id: plantId, scan: scanRecord });
+    // Build action from AI result
+    const act = aiResult.primary_action;
+    const actionIcon =
+      act.type === 'water' ? E.drop :
+      act.type === 'light' ? E.sun :
+      act.type === 'nutrition' ? E.tube :
+      act.type === 'pest' ? E.bug : E.sparkle;
+
+    dispatch({
+      type: 'UPDATE_PLANT_HP',
+      id: plantId,
+      scan: scanRecord,
+      action: { type: act.type as 'water' | 'light' | 'nutrition' | 'pest' | 'none', label: act.label, icon: actionIcon },
+    });
+    dispatch({ type: 'SET_PENDING_SCAN', scan: null });
   };
 
   const handleNewPlant = () => {
     // Save match log
-    saveMatchLog({
+    insertMatchLog({
       id: crypto.randomUUID(),
       scan_id: crypto.randomUUID(),
       ai_suggestion: matches[0]?.plantId || null,
@@ -106,7 +130,7 @@ export default function MatchConfirmPage() {
             onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
           >
             <div style={{ width: 44, height: 44, flexShrink: 0 }}>
-              <PixelPlant hp={plant.current_hp} size={44} />
+              <PixelPlant hp={plant.current_hp} size={44} species={plant.species} />
             </div>
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 2 }}>
@@ -178,7 +202,7 @@ export default function MatchConfirmPage() {
             onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
           >
             <div style={{ width: 36, height: 36, flexShrink: 0 }}>
-              <PixelPlant hp={plant.current_hp} size={36} />
+              <PixelPlant hp={plant.current_hp} size={36} species={plant.species} />
             </div>
             <div style={{ flex: 1 }}>
               <span

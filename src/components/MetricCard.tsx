@@ -19,7 +19,8 @@ export default function MetricCard({ icon, label, value, metricKey }: MetricCard
         background: T.card,
         border: '1px solid ' + (isPestWarn ? 'rgba(230,81,0,0.25)' : T.border),
         borderRadius: 12,
-        padding: '12px 12px 10px',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+        padding: 12,
       }}
     >
       <div

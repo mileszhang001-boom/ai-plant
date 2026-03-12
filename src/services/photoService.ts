@@ -40,6 +40,15 @@ export async function getPhoto(scanId: string): Promise<string | null> {
   });
 }
 
+export async function compressBase64Photo(
+  dataURL: string,
+  maxWidth = 1024
+): Promise<string> {
+  const response = await fetch(dataURL);
+  const blob = await response.blob();
+  return compressPhoto(blob, maxWidth);
+}
+
 export async function compressPhoto(
   file: File | Blob,
   maxWidth = 1024
@@ -66,8 +75,3 @@ function blobToBase64(blob: Blob): Promise<string> {
   });
 }
 
-export function dataURLtoBase64Content(dataURL: string): string {
-  // Strip the "data:image/jpeg;base64," prefix
-  const idx = dataURL.indexOf(',');
-  return idx >= 0 ? dataURL.substring(idx + 1) : dataURL;
-}

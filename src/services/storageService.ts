@@ -85,8 +85,3 @@ function pruneOldScans(): void {
   }
 }
 
-export function clearAllData(): void {
-  Object.values(STORAGE_KEYS).forEach((key) => {
-    localStorage.removeItem(key);
-  });
-}

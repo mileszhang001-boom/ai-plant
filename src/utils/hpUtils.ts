@@ -16,15 +16,6 @@ export function hpMood(v: number): string {
   return E.skull + ' 危险! 紧急抢救!';
 }
 
-export function calculateHp(metrics: { water: number; light: number; nutrition: number; pest: number }): number {
-  return Math.round(
-    metrics.water * 0.3 +
-    metrics.light * 0.25 +
-    metrics.nutrition * 0.2 +
-    metrics.pest * 0.25
-  );
-}
-
 export function isStale(lastScannedAt: number): boolean {
   const THREE_DAYS = 3 * 24 * 60 * 60 * 1000;
   return Date.now() - lastScannedAt > THREE_DAYS;

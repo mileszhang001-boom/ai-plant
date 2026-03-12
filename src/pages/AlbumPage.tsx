@@ -1,18 +1,39 @@
+import { useState, useEffect } from 'react';
 import { T, E, FONTS } from '../theme';
 import { hpColor, hpFace } from '../utils/hpUtils';
 import { useApp } from '../App';
+import { getPhotoUrl } from '../services/supabaseStorageService';
 import PixelPlant from '../components/PixelPlant';
 import MiniBar from '../components/MiniBar';
 
 export default function AlbumPage() {
   const { state, navigate } = useApp();
   const plant = state.plants.find((p) => p.id === state.selectedPlantId);
-  if (!plant) return null;
+  const [photos, setPhotos] = useState<Record<string, string>>({});
 
-  // Get scan records for this plant, sorted newest first
-  const records = state.scanRecords
+  // Load photos from IndexedDB
+  const records = (plant ? state.scanRecords
     .filter((r) => r.plant_id === plant.id)
-    .sort((a, b) => b.scanned_at - a.scanned_at);
+    .sort((a, b) => b.scanned_at - a.scanned_at) : []);
+
+  useEffect(() => {
+    if (!records.length) return;
+    let cancelled = false;
+    async function loadPhotos() {
+      const loaded: Record<string, string> = {};
+      for (const r of records) {
+        try {
+          const url = await getPhotoUrl(r.id);
+          if (url) loaded[r.id] = url;
+        } catch { /* ignore */ }
+      }
+      if (!cancelled) setPhotos(loaded);
+    }
+    loadPhotos();
+    return () => { cancelled = true; };
+  }, [records.length]);
+
+  if (!plant) return null;
 
   return (
     <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px 16px' }}>
@@ -112,11 +133,11 @@ export default function AlbumPage() {
                     </span>
                   )}
                 </div>
-                {/* Photo placeholder with pixel plant */}
+                {/* Photo or pixel plant fallback */}
                 <div
                   style={{
                     width: '100%',
-                    height: 100,
+                    height: 120,
                     borderRadius: 10,
                     background: T.bg,
                     display: 'flex',
@@ -124,9 +145,32 @@ export default function AlbumPage() {
                     justifyContent: 'center',
                     marginBottom: 10,
                     border: '1px solid ' + T.border,
+                    overflow: 'hidden',
+                    position: 'relative',
                   }}
                 >
-                  <PixelPlant hp={entry.hp} size={60} />
+                  {photos[entry.id] ? (
+                    <>
+                      <img
+                        src={photos[entry.id]}
+                        alt="植物照片"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                      <div style={{
+                        position: 'absolute',
+                        bottom: 6,
+                        right: 6,
+                      }}>
+                        <PixelPlant hp={entry.hp} size={36} species={plant.species} />
+                      </div>
+                    </>
+                  ) : (
+                    <PixelPlant hp={entry.hp} size={60} species={plant.species} />
+                  )}
                 </div>
                 <div
                   style={{

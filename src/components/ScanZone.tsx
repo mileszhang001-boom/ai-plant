@@ -13,7 +13,7 @@ export default function ScanZone({ lastScannedAt, onScan }: ScanZoneProps) {
     <div
       style={{
         flexShrink: 0,
-        padding: '10px 16px 16px',
+        padding: '14px 16px 16px',
         borderTop: '1px solid ' + T.border,
         background: T.bg,
       }}
@@ -76,8 +76,8 @@ export default function ScanZone({ lastScannedAt, onScan }: ScanZoneProps) {
           background: stale ? '#E65100' : 'transparent',
           color: stale ? '#fff' : T.text2,
           border: stale ? 'none' : '1.5px solid ' + T.border,
-          borderRadius: 10,
-          fontSize: 13,
+          borderRadius: 12,
+          fontSize: 14,
           fontWeight: 700,
           cursor: 'pointer',
           display: 'flex',

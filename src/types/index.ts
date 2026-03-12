@@ -105,6 +105,7 @@ export interface AppState {
   currentPage: PageName;
   selectedPlantId: string | null;
   pendingScan: PendingScan | null;
+  dataLoading: boolean;
 }
 
 export type AppAction =
@@ -116,4 +117,5 @@ export type AppAction =
   | { type: 'SET_PENDING_SCAN'; scan: PendingScan | null }
   | { type: 'SET_PLANTS'; plants: Plant[] }
   | { type: 'SET_SCAN_RECORDS'; records: ScanRecord[] }
-  | { type: 'ADD_SCAN_RECORD'; record: ScanRecord };
+  | { type: 'ADD_SCAN_RECORD'; record: ScanRecord }
+  | { type: 'SET_DATA_LOADING'; loading: boolean };

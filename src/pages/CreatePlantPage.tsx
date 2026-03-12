@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { T, E, FONTS } from '../theme';
 import { useApp } from '../App';
 import { validateMetrics } from '../utils/smoothing';
-import { saveScanRecord, saveMatchLog } from '../services/storageService';
-import { savePhoto } from '../services/photoService';
+import { insertMatchLog } from '../services/supabaseStorageService';
+import { uploadPhoto } from '../services/supabaseStorageService';
+import { compressBase64Photo } from '../services/photoService';
 import PixelPlant from '../components/PixelPlant';
 import PixelBar from '../components/PixelBar';
 
@@ -15,10 +16,11 @@ export default function CreatePlantPage() {
   const [funName, setFunName] = useState(aiResult?.fun_name || '我的新植物');
   const [editing, setEditing] = useState(false);
 
-  if (!aiResult) {
-    navigate('list');
-    return null;
-  }
+  useEffect(() => {
+    if (!aiResult) navigate('list');
+  }, [aiResult]);
+
+  if (!aiResult) return null;
 
   const validatedMetrics = validateMetrics(aiResult.metrics);
 
@@ -62,20 +64,15 @@ export default function CreatePlantPage() {
       ai_raw_response: aiResult,
     };
 
-    // Save photo to IndexedDB
+    // Compress & upload photo to Supabase Storage
     if (pending?.photoBase64) {
-      try {
-        await savePhoto(scanId, pending.photoBase64);
-      } catch {
-        // Photo save failure is non-critical
-      }
+      compressBase64Photo(pending.photoBase64).then(
+        (compressed) => uploadPhoto(scanId, compressed)
+      ).catch(() => {});
     }
 
-    // Save scan record
-    saveScanRecord(scanRecord);
-
     // Save match log
-    saveMatchLog({
+    insertMatchLog({
       id: crypto.randomUUID(),
       scan_id: scanId,
       ai_suggestion: null,
@@ -133,7 +130,7 @@ export default function CreatePlantPage() {
           textAlign: 'center',
         }}
       >
-        <PixelPlant hp={aiResult.hp} size={90} />
+        <PixelPlant hp={aiResult.hp} size={90} species={aiResult.species} />
 
         {/* Editable name */}
         <div

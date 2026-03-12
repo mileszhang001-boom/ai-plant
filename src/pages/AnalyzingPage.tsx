@@ -5,8 +5,8 @@ import type { PlantAction } from '../types';
 import { analyzePlant } from '../services/aiService';
 import { smoothHp, validateMetrics } from '../utils/smoothing';
 import { matchPlant, routeAfterScan } from '../utils/matchUtils';
-import { saveScanRecord } from '../services/storageService';
-import { savePhoto } from '../services/photoService';
+import { compressBase64Photo } from '../services/photoService';
+import { uploadPhoto } from '../services/supabaseStorageService';
 import PixelBar from '../components/PixelBar';
 
 const STEPS = [
@@ -105,10 +105,11 @@ export default function AnalyzingPage() {
               label: act.label,
               icon: actionIcon,
             };
-            // Save scan record and photo
-            saveScanRecord(scanRecord);
+            // Compress & upload photo to Supabase
             if (pending?.photoBase64) {
-              savePhoto(scanRecord.id, pending.photoBase64).catch(() => {});
+              compressBase64Photo(pending.photoBase64).then(
+                (compressed) => uploadPhoto(scanRecord.id, compressed)
+              ).catch(() => {});
             }
             dispatch({ type: 'UPDATE_PLANT_HP', id: targetPlant.id, scan: scanRecord, action: plantAction });
             dispatch({ type: 'SET_PENDING_SCAN', scan: null });
