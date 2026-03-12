@@ -68,8 +68,8 @@ export default function PlantListPage() {
                 letterSpacing: 1,
                 fontWeight: 600,
                 cursor: 'pointer',
-                padding: '2px 6px',
-                borderRadius: 4,
+                padding: '6px 10px',
+                borderRadius: 6,
                 border: '1px solid ' + T.border,
               }}
             >
@@ -83,8 +83,8 @@ export default function PlantListPage() {
                 letterSpacing: 1,
                 fontWeight: 600,
                 cursor: 'pointer',
-                padding: '2px 6px',
-                borderRadius: 4,
+                padding: '6px 10px',
+                borderRadius: 6,
                 border: '1px solid ' + T.border,
               }}
             >
@@ -269,11 +269,11 @@ export default function PlantListPage() {
                   maxLength={100}
                   style={{
                     width: '100%',
-                    padding: '10px 12px',
+                    padding: 12,
                     borderRadius: 10,
                     border: '1px solid ' + T.border,
                     background: T.bg,
-                    fontSize: 12,
+                    fontSize: 13,
                     color: T.text1,
                     outline: 'none',
                     fontFamily: FONTS.body,
@@ -286,7 +286,7 @@ export default function PlantListPage() {
                     onClick={() => setShowFeedback(false)}
                     style={{
                       flex: 1,
-                      padding: '10px 0',
+                      padding: '12px 0',
                       background: T.bg,
                       color: T.text2,
                       border: '1px solid ' + T.border,
@@ -303,14 +303,15 @@ export default function PlantListPage() {
                     disabled={fbSending || !fbContent.trim()}
                     style={{
                       flex: 1,
-                      padding: '10px 0',
+                      padding: '12px 0',
                       background: !fbContent.trim() ? T.barBg : T.accent,
                       color: !fbContent.trim() ? T.text3 : '#fff',
                       border: 'none',
                       borderRadius: 10,
                       fontSize: 13,
                       fontWeight: 700,
-                      cursor: fbContent.trim() ? 'pointer' : 'default',
+                      cursor: fbContent.trim() ? 'pointer' : 'not-allowed',
+                      opacity: fbContent.trim() ? 1 : 0.6,
                     }}
                   >
                     {fbSending ? '提交中...' : '提交'}

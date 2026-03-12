@@ -143,7 +143,7 @@ function PageRouter() {
         justifyContent: 'center',
         gap: 12,
       }}>
-        <div style={{ fontSize: 36 }}>{E.seedling}</div>
+        <div style={{ fontSize: 36, animation: 'pulse 1.5s ease-in-out infinite' }}>{E.seedling}</div>
         <div style={{
           fontSize: 12,
           color: T.text3,
@@ -152,6 +152,7 @@ function PageRouter() {
         }}>
           LOADING...
         </div>
+        <style>{`@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }`}</style>
       </div>
     );
   }
@@ -282,7 +283,8 @@ function AppContent() {
         alignItems: 'center',
         justifyContent: 'center',
       }}>
-        <div style={{ fontSize: 36 }}>{E.seedling}</div>
+        <div style={{ fontSize: 36, animation: 'pulse 1.5s ease-in-out infinite' }}>{E.seedling}</div>
+        <style>{`@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }`}</style>
       </div>
     );
   }

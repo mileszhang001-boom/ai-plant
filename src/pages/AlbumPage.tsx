@@ -43,8 +43,9 @@ export default function AlbumPage() {
           fontSize: 13,
           color: T.accent,
           cursor: 'pointer',
-          marginBottom: 12,
+          marginBottom: 4,
           fontWeight: 600,
+          padding: '8px 4px',
         }}
       >
         {'← ' + plant.fun_name}

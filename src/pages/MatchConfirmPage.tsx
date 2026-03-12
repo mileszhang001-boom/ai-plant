@@ -188,7 +188,7 @@ export default function MatchConfirmPage() {
               display: 'flex',
               alignItems: 'center',
               gap: 12,
-              padding: '12px 16px',
+              padding: '14px 16px',
               borderRadius: 14,
               marginBottom: 8,
               cursor: 'pointer',
@@ -201,8 +201,8 @@ export default function MatchConfirmPage() {
             onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
             onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
           >
-            <div style={{ width: 36, height: 36, flexShrink: 0 }}>
-              <PixelPlant hp={plant.current_hp} size={36} species={plant.species} />
+            <div style={{ width: 40, height: 40, flexShrink: 0 }}>
+              <PixelPlant hp={plant.current_hp} size={40} species={plant.species} />
             </div>
             <div style={{ flex: 1 }}>
               <span
@@ -236,7 +236,11 @@ export default function MatchConfirmPage() {
           fontSize: 13,
           fontWeight: 700,
           cursor: 'pointer',
+          transition: 'transform 0.1s',
         }}
+        onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.97)')}
+        onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+        onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
       >
         {E.seedling + ' 这是新植物'}
       </div>

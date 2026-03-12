@@ -45,7 +45,7 @@ export default function PlantDetailPage() {
         >
           <div
             onClick={() => navigate('list')}
-            style={{ fontSize: 13, color: T.accent, cursor: 'pointer', fontWeight: 600 }}
+            style={{ fontSize: 13, color: T.accent, cursor: 'pointer', fontWeight: 600, padding: '8px 4px' }}
           >
             ← 返回
           </div>
@@ -56,7 +56,7 @@ export default function PlantDetailPage() {
               alignItems: 'center',
               gap: 4,
               cursor: 'pointer',
-              padding: '5px 12px',
+              padding: '8px 14px',
               borderRadius: 8,
               border: '1px solid ' + T.border,
               fontSize: 11,

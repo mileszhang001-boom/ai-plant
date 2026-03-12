@@ -120,7 +120,7 @@ export default function PlantCard({ plant, onClick }: PlantCardProps) {
                 color: '#E65100',
                 fontWeight: 700,
                 background: 'rgba(230,81,0,0.08)',
-                padding: '1px 5px',
+                padding: '2px 6px',
                 borderRadius: 4,
               }}
             >

@@ -11,7 +11,7 @@ export default function MiniBar({ value, total = 10, h = 8 }: MiniBarProps) {
   const filled = Math.round((value / 100) * total);
 
   return (
-    <div style={{ display: 'flex', gap: 1.5 }}>
+    <div style={{ display: 'flex', gap: 2 }}>
       {Array.from({ length: total }).map((_, i) => (
         <div
           key={i}

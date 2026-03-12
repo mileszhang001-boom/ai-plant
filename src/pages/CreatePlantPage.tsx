@@ -183,6 +183,8 @@ export default function CreatePlantPage() {
                   fontSize: 14,
                   cursor: 'pointer',
                   color: T.text3,
+                  padding: '4px 8px',
+                  borderRadius: 6,
                 }}
               >
                 ✏️

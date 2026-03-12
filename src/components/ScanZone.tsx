@@ -73,6 +73,7 @@ export default function ScanZone({ lastScannedAt, onScan }: ScanZoneProps) {
         style={{
           width: '100%',
           padding: '12px 0',
+          minHeight: 48,
           background: stale ? '#E65100' : 'transparent',
           color: stale ? '#fff' : T.text2,
           border: stale ? 'none' : '1.5px solid ' + T.border,

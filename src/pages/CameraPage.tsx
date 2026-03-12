@@ -136,7 +136,7 @@ export default function CameraPage() {
           fontSize: 13,
           fontWeight: 600,
           cursor: 'pointer',
-          background: 'rgba(0,0,0,0.4)',
+          background: 'rgba(0,0,0,0.6)',
           padding: '6px 14px',
           borderRadius: 8,
         }}
@@ -202,7 +202,7 @@ export default function CameraPage() {
       {/* Bottom controls */}
       <div
         style={{
-          padding: '20px 0 32px',
+          padding: '20px 24px 36px',
           background: 'rgba(0,0,0,0.6)',
           display: 'flex',
           flexDirection: 'column',
@@ -220,7 +220,7 @@ export default function CameraPage() {
         >
           对准植物拍照
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, width: '100%' }}>
           {/* Capture button */}
           <button
             onClick={handleCapture}
