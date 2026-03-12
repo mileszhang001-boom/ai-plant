@@ -138,7 +138,7 @@ export default function AlbumPage() {
                 <div
                   style={{
                     width: '100%',
-                    height: 120,
+                    height: 200,
                     borderRadius: 10,
                     background: T.bg,
                     display: 'flex',

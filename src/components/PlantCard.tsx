@@ -100,14 +100,13 @@ export default function PlantCard({ plant, onClick }: PlantCardProps) {
             {hpFace(plant.current_hp)}
           </span>
         </div>
-        <PixelBar value={plant.current_hp} total={15} h={6} gap={1} />
+        <PixelBar value={plant.current_hp} total={12} h={7} gap={2} />
         {/* Last scan time */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 5 }}>
           <span
             style={{
-              fontSize: 9,
-              color: stale ? '#E65100' : T.text3,
-              fontFamily: FONTS.pixel,
+              fontSize: 10,
+              color: stale ? '#E65100' : T.text2,
               fontWeight: 600,
             }}
           >

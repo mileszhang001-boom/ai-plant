@@ -27,7 +27,6 @@ export default function PlantDetailPage() {
     if (actionDone) return;
     setActionDone(true);
     dispatch({ type: 'COMPLETE_ACTION', id: plant.id });
-    setTimeout(() => setActionDone(false), 2000);
   };
 
   return (
@@ -76,7 +75,7 @@ export default function PlantDetailPage() {
             background: heroGradient(dHp),
             border: '1px solid ' + T.border,
             borderRadius: 20,
-            padding: '20px 20px 18px',
+            padding: '14px 18px 12px',
             marginBottom: 14,
             boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
             position: 'relative',
@@ -93,7 +92,7 @@ export default function PlantDetailPage() {
           }} />
 
           {/* Plant name & species */}
-          <div style={{ textAlign: 'center', marginBottom: 6, position: 'relative' }}>
+          <div style={{ textAlign: 'center', marginBottom: 2, position: 'relative' }}>
             <div
               style={{
                 fontSize: 18,
@@ -111,15 +110,15 @@ export default function PlantDetailPage() {
           </div>
 
           {/* Pixel plant — enlarged */}
-          <div style={{ padding: '12px 0 8px', position: 'relative' }}>
-            <PixelPlant hp={dHp} size={120} species={plant.species} />
+          <div style={{ padding: '6px 0 4px', position: 'relative' }}>
+            <PixelPlant hp={dHp} size={100} species={plant.species} />
           </div>
 
-          {/* ASCII expression — enlarged */}
-          <div style={{ textAlign: 'center', marginBottom: 12 }}>
+          {/* ASCII expression */}
+          <div style={{ textAlign: 'center', marginBottom: 8 }}>
             <div
               style={{
-                fontSize: 36,
+                fontSize: 28,
                 color: hpColor(dHp),
                 fontFamily: FONTS.pixel,
                 fontWeight: 700,
