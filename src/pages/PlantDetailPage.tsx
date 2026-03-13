@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { T, E, FONTS, heroGradient } from '../theme';
 import { hpColor, hpFace, hpMood } from '../utils/hpUtils';
 import { useApp } from '../App';
@@ -9,12 +8,12 @@ import ScanZone from '../components/ScanZone';
 
 export default function PlantDetailPage() {
   const { state, dispatch, navigate } = useApp();
-  const [actionDone, setActionDone] = useState(false);
 
   const plant = state.plants.find((p) => p.id === state.selectedPlantId);
   if (!plant) return null;
 
-  const dHp = actionDone ? Math.min(100, plant.current_hp + 5) : plant.current_hp;
+  const actionDone = plant.current_action.type === 'none';
+  const dHp = plant.current_hp;
 
   const metrics = [
     { key: 'water', label: '水分', icon: E.drop, value: plant.current_metrics.water },
@@ -25,7 +24,6 @@ export default function PlantDetailPage() {
 
   const handleAction = () => {
     if (actionDone) return;
-    setActionDone(true);
     dispatch({ type: 'COMPLETE_ACTION', id: plant.id });
   };
 

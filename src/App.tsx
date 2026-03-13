@@ -87,7 +87,11 @@ function appReducer(state: AppState, action: AppAction): AppState {
         ...state,
         plants: state.plants.map((p) =>
           p.id === action.id
-            ? { ...p, current_hp: Math.min(100, p.current_hp + 5) }
+            ? {
+                ...p,
+                current_hp: Math.min(100, p.current_hp + 5),
+                current_action: { type: 'none' as const, label: '暂无待办', icon: '✔' },
+              }
             : p
         ),
       };
