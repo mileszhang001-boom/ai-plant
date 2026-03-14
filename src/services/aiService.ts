@@ -4,7 +4,7 @@ const API_ENDPOINT =
   'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions';
 
 const API_KEY = import.meta.env.VITE_QWEN_API_KEY || '';
-const MODEL = import.meta.env.VITE_QWEN_MODEL || 'qwen3.5-plus';
+const MODEL = import.meta.env.VITE_QWEN_MODEL || 'qwen-vl-max';
 
 const SYSTEM_PROMPT = `你是 PlantOS 植物健康评估专家。你的任务是根据用户提供的植物照片，
 进行结构化的健康评估，并以可爱有趣的方式生成结果。
@@ -120,7 +120,7 @@ export async function analyzePlant(
   }
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 30000);
+  const timeout = setTimeout(() => controller.abort(), 120000);
 
   try {
     const response = await fetch(API_ENDPOINT, {
