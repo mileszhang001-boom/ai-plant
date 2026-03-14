@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react';
 import { T, E, FONTS } from '../theme';
 import { hpColor, hpFace, formatTimeSince, isStale } from '../utils/hpUtils';
 import type { Plant } from '../types';
@@ -7,125 +8,223 @@ import PixelBar from './PixelBar';
 interface PlantCardProps {
   plant: Plant;
   onClick: () => void;
+  onDelete?: () => void;
 }
 
-export default function PlantCard({ plant, onClick }: PlantCardProps) {
+const DELETE_WIDTH = 72;
+const SWIPE_THRESHOLD = 40;
+
+export default function PlantCard({ plant, onClick, onDelete }: PlantCardProps) {
   const c = hpColor(plant.current_hp);
   const stale = isStale(plant.last_scanned_at);
 
+  const [offsetX, setOffsetX] = useState(0);
+  const [open, setOpen] = useState(false);
+  const startX = useRef(0);
+  const startY = useRef(0);
+  const swiping = useRef(false);
+  const locked = useRef(false); // lock direction after first move
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    startX.current = e.touches[0].clientX;
+    startY.current = e.touches[0].clientY;
+    swiping.current = false;
+    locked.current = false;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const dx = e.touches[0].clientX - startX.current;
+    const dy = e.touches[0].clientY - startY.current;
+
+    if (!locked.current) {
+      if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+        locked.current = true;
+        swiping.current = Math.abs(dx) > Math.abs(dy);
+      }
+      return;
+    }
+
+    if (!swiping.current) return;
+
+    const base = open ? -DELETE_WIDTH : 0;
+    const next = Math.min(0, Math.max(-DELETE_WIDTH, base + dx));
+    setOffsetX(next);
+  };
+
+  const handleTouchEnd = () => {
+    if (!swiping.current) return;
+    if (offsetX < -SWIPE_THRESHOLD) {
+      setOffsetX(-DELETE_WIDTH);
+      setOpen(true);
+    } else {
+      setOffsetX(0);
+      setOpen(false);
+    }
+  };
+
+  const handleClick = () => {
+    if (open) {
+      setOffsetX(0);
+      setOpen(false);
+      return;
+    }
+    onClick();
+  };
+
+  const handleDelete = () => {
+    if (onDelete) {
+      if (window.confirm(`确定要删除「${plant.fun_name}」吗？`)) {
+        onDelete();
+      }
+    }
+  };
+
   return (
     <div
-      onClick={onClick}
       style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-        padding: '12px 14px',
+        position: 'relative',
+        overflow: 'hidden',
         borderRadius: 14,
         marginBottom: 8,
-        cursor: 'pointer',
-        background: T.card,
-        border: '1px solid ' + T.border,
-        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-        transition: 'transform 0.1s',
       }}
-      onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.97)')}
-      onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-      onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-      onTouchStart={(e) => (e.currentTarget.style.transform = 'scale(0.97)')}
-      onTouchEnd={(e) => (e.currentTarget.style.transform = 'scale(1)')}
     >
-      {/* Mini pixel plant */}
-      <div style={{ width: 44, height: 44, flexShrink: 0, position: 'relative' }}>
-        <PixelPlant hp={plant.current_hp} size={44} species={plant.species} />
+      {/* Delete button behind */}
+      <div
+        onClick={handleDelete}
+        style={{
+          position: 'absolute',
+          right: 0,
+          top: 0,
+          bottom: 0,
+          width: DELETE_WIDTH,
+          background: '#E53935',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff',
+          fontSize: 13,
+          fontWeight: 700,
+          cursor: 'pointer',
+          borderRadius: '0 14px 14px 0',
+        }}
+      >
+        删除
       </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'baseline',
-            marginBottom: 2,
-          }}
-        >
-          <span
+
+      {/* Card content - slides left */}
+      <div
+        onClick={handleClick}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          padding: '12px 14px',
+          cursor: 'pointer',
+          background: T.card,
+          border: '1px solid ' + T.border,
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+          transform: `translateX(${offsetX}px)`,
+          transition: swiping.current ? 'none' : 'transform 0.25s ease',
+          borderRadius: 14,
+          position: 'relative',
+          zIndex: 1,
+        }}
+      >
+        {/* Mini pixel plant */}
+        <div style={{ width: 44, height: 44, flexShrink: 0, position: 'relative' }}>
+          <PixelPlant hp={plant.current_hp} size={44} species={plant.species} />
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div
             style={{
-              fontSize: 14,
-              fontWeight: 700,
-              color: T.text1,
-              fontFamily: FONTS.pixel,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'baseline',
+              marginBottom: 2,
             }}
           >
-            {plant.fun_name}
-          </span>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 3 }}>
             <span
               style={{
                 fontSize: 14,
-                fontWeight: 800,
+                fontWeight: 700,
+                color: T.text1,
+                fontFamily: FONTS.pixel,
+              }}
+            >
+              {plant.fun_name}
+            </span>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 3 }}>
+              <span
+                style={{
+                  fontSize: 14,
+                  fontWeight: 800,
+                  color: c,
+                  fontFamily: FONTS.pixel,
+                }}
+              >
+                {plant.current_hp}
+              </span>
+              <span
+                style={{
+                  fontSize: 9,
+                  color: T.text3,
+                  fontFamily: FONTS.pixel,
+                }}
+              >
+                HP
+              </span>
+            </div>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 5,
+            }}
+          >
+            <span style={{ fontSize: 10, color: T.text3 }}>{plant.species}</span>
+            <span
+              style={{
+                fontSize: 12,
                 color: c,
                 fontFamily: FONTS.pixel,
+                letterSpacing: 1,
               }}
             >
-              {plant.current_hp}
-            </span>
-            <span
-              style={{
-                fontSize: 9,
-                color: T.text3,
-                fontFamily: FONTS.pixel,
-              }}
-            >
-              HP
+              {hpFace(plant.current_hp)}
             </span>
           </div>
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 5,
-          }}
-        >
-          <span style={{ fontSize: 10, color: T.text3 }}>{plant.species}</span>
-          <span
-            style={{
-              fontSize: 12,
-              color: c,
-              fontFamily: FONTS.pixel,
-              letterSpacing: 1,
-            }}
-          >
-            {hpFace(plant.current_hp)}
-          </span>
-        </div>
-        <PixelBar value={plant.current_hp} total={12} h={7} gap={2} />
-        {/* Last scan time */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 5 }}>
-          <span
-            style={{
-              fontSize: 10,
-              color: stale ? '#E65100' : T.text2,
-              fontWeight: 600,
-            }}
-          >
-            {E.clock + ' ' + formatTimeSince(plant.last_scanned_at)}
-          </span>
-          {stale && (
+          <PixelBar value={plant.current_hp} total={12} h={7} gap={2} />
+          {/* Last scan time */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 5 }}>
             <span
               style={{
-                fontSize: 8,
-                color: '#E65100',
-                fontWeight: 700,
-                background: 'rgba(230,81,0,0.08)',
-                padding: '2px 6px',
-                borderRadius: 4,
+                fontSize: 10,
+                color: stale ? '#E65100' : T.text2,
+                fontWeight: 600,
               }}
             >
-              该复查
+              {E.clock + ' ' + formatTimeSince(plant.last_scanned_at)}
             </span>
-          )}
+            {stale && (
+              <span
+                style={{
+                  fontSize: 8,
+                  color: '#E65100',
+                  fontWeight: 700,
+                  background: 'rgba(230,81,0,0.08)',
+                  padding: '2px 6px',
+                  borderRadius: 4,
+                }}
+              >
+                该复查
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </div>

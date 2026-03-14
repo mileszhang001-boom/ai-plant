@@ -150,6 +150,7 @@ export default function PlantListPage() {
                 key={p.id}
                 plant={p}
                 onClick={() => dispatch({ type: 'SELECT_PLANT', id: p.id })}
+                onDelete={() => dispatch({ type: 'DELETE_PLANT', id: p.id })}
               />
             ))}
 

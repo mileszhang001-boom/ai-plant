@@ -2,7 +2,7 @@ import { useReducer, useEffect, useCallback, createContext, useContext, useRef, 
 import type { AppState, AppAction, PageName, Plant } from './types';
 import { T, E, FONTS } from './theme';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { fetchPlants, fetchScanRecords, upsertPlant, insertScanRecord } from './services/supabaseStorageService';
+import { fetchPlants, fetchScanRecords, upsertPlant, insertScanRecord, deletePlant as deleteRemotePlant } from './services/supabaseStorageService';
 import PlantListPage from './pages/PlantListPage';
 import PlantDetailPage from './pages/PlantDetailPage';
 import AlbumPage from './pages/AlbumPage';
@@ -94,6 +94,13 @@ function appReducer(state: AppState, action: AppAction): AppState {
               }
             : p
         ),
+      };
+
+    case 'DELETE_PLANT':
+      return {
+        ...state,
+        plants: state.plants.filter((p) => p.id !== action.id),
+        selectedPlantId: state.selectedPlantId === action.id ? null : state.selectedPlantId,
       };
 
     case 'SET_PENDING_SCAN':
@@ -222,6 +229,12 @@ function AppContent() {
       const old = prev.find(p => p.id === plant.id);
       if (!old || JSON.stringify(old) !== JSON.stringify(plant)) {
         upsertPlant(plant).catch(err => console.error('Failed to save plant:', err));
+      }
+    }
+    // Find deleted plants
+    for (const old of prev) {
+      if (!state.plants.find(p => p.id === old.id)) {
+        deleteRemotePlant(old.id).catch(err => console.error('Failed to delete plant:', err));
       }
     }
     prevPlantsRef.current = state.plants;
