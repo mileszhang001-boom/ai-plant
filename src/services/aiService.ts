@@ -30,25 +30,27 @@ const SYSTEM_PROMPT = `你是 PlantOS 植物健康评估专家。你的任务是
 function buildFirstScanPrompt(): string {
   return `请评估这张植物照片的健康状态。这是一棵新植物，我刚开始养它。
 
-请严格按以下 JSON 格式输出：
+重要：你必须根据照片中植物的实际状态独立判断每项分数，不同植物、不同状态的分数应有明显差异。
+
+请严格按以下 JSON 格式输出（所有数值字段必须根据照片实际情况填写）：
 {
-  "species": "植物种类中文名",
-  "species_confidence": 0.92,
-  "fun_name": "趣味昵称",
-  "personality": "性格签名",
-  "hp": 78,
+  "species": "识别出的植物种类中文名",
+  "species_confidence": <0到1之间的置信度>,
+  "fun_name": "根据植物特征起的趣味昵称",
+  "personality": "根据植物状态写的性格签名",
+  "hp": <根据公式计算的0-100整数>,
   "metrics": {
-    "water": { "value": 45, "confidence": "high" },
-    "light": { "value": 82, "confidence": "high" },
-    "nutrition": { "value": 65, "confidence": "medium" },
-    "pest": { "value": 95, "confidence": "high" }
+    "water": { "value": <0-100整数>, "confidence": "high/medium/low" },
+    "light": { "value": <0-100整数>, "confidence": "high/medium/low" },
+    "nutrition": { "value": <0-100整数>, "confidence": "high/medium/low" },
+    "pest": { "value": <0-100整数>, "confidence": "high/medium/low" }
   },
   "primary_action": {
-    "type": "water",
-    "label": "该浇水啦",
-    "urgency": "medium"
+    "type": "water/light/nutrition/pest",
+    "label": "具体的行动建议",
+    "urgency": "high/medium/low"
   },
-  "diagnosis_summary": "叶片整体翠绿，但土壤偏干，建议适当浇水"
+  "diagnosis_summary": "基于照片观察到的具体症状描述"
 }`;
 }
 
@@ -66,23 +68,25 @@ function buildUpdatePrompt(plant: Plant): string {
 
 请基于与上次的对比给出本次评估。变化幅度应合理反映实际状态变化。
 
-请严格按以下 JSON 格式输出（不需要 fun_name 和 personality 字段）：
+重要：你必须根据照片中植物的实际状态独立判断每项分数，与上次对比给出合理变化。
+
+请严格按以下 JSON 格式输出（不需要 fun_name 和 personality 字段，所有数值必须根据照片实际情况填写）：
 {
-  "species": "植物种类中文名",
-  "species_confidence": 0.95,
-  "hp": 80,
+  "species": "识别出的植物种类中文名",
+  "species_confidence": <0到1之间的置信度>,
+  "hp": <根据公式计算的0-100整数>,
   "metrics": {
-    "water": { "value": 50, "confidence": "high" },
-    "light": { "value": 85, "confidence": "high" },
-    "nutrition": { "value": 68, "confidence": "medium" },
-    "pest": { "value": 92, "confidence": "high" }
+    "water": { "value": <0-100整数>, "confidence": "high/medium/low" },
+    "light": { "value": <0-100整数>, "confidence": "high/medium/low" },
+    "nutrition": { "value": <0-100整数>, "confidence": "high/medium/low" },
+    "pest": { "value": <0-100整数>, "confidence": "high/medium/low" }
   },
   "primary_action": {
-    "type": "water",
-    "label": "该浇水啦",
-    "urgency": "medium"
+    "type": "water/light/nutrition/pest",
+    "label": "具体的行动建议",
+    "urgency": "high/medium/low"
   },
-  "diagnosis_summary": "与上次相比状态有所改善，继续保持"
+  "diagnosis_summary": "与上次对比的具体变化描述"
 }`;
 }
 
